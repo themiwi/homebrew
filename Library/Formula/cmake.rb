@@ -13,11 +13,13 @@ class Cmake <Formula
               "# Mention to the user what system libraries are being used.",
               "SET(CMAKE_USE_SYSTEM_XMLRPC 0)"
 
-    system "./bootstrap", "--prefix=#{prefix}",
-                          "--system-libs",
-                          "--datadir=/share/cmake",
-                          "--docdir=/share/doc/cmake",
-                          "--mandir=/share/man"
+    FileUtils.mkdir "build"
+    FileUtils.cd "build"
+    system "../bootstrap", "--prefix=#{prefix}",
+                           "--system-libs",
+                           "--datadir=/share/cmake",
+                           "--docdir=/share/doc/cmake",
+                           "--mandir=/share/man"
     system "make install"
   end
 end
