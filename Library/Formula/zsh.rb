@@ -13,6 +13,8 @@ class Zsh <Formula
                           # don't version stuff in Homebrew, we already do that!
                           "--enable-fndir=#{share+'zsh'+'functions'}",
                           "--enable-scriptdir=#{share+'zsh'+'scripts'}",
+                          # specify sys-config directory
+                          "--enable-etcdir=#{etc+'zsh'}",
                           # HTML doc directory
                           "--htmldir=#{html}"
 
@@ -26,6 +28,12 @@ class Zsh <Formula
     doc.install Dir['INSTALL', 'LICENCE', 'META-FAQ', 'README',
                      'StartupFiles/*', 'ChangeLog*', 'Doc/zsh.pdf']
     (html+'index.html').make_symlink(html+'zsh.html')
+
+    # prepare HOMEBREW_PREFIX/etc/zsh directory
+    (etc+'zsh').mkpath
+    # prepare HOMEBREW_PREFIX/share/zsh directory to reduce number of symlinks
+    # when combined with zsh-templates
+    (HOMEBREW_PREFIX+'share'+'zsh').mkpath
   end
 
   def skip_clean? path
