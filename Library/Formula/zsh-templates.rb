@@ -12,8 +12,8 @@ class ZshTemplates <Formula
   end
 
   def install
-    link_tmpl = HOMEBREW_PREFIX+'share' + 'zsh' + 'templates'
-    init = share+'zsh'+'templates'+'Library'+'init'+'zsh'
+    link_tmpl = HOMEBREW_PREFIX+'share/zsh/templates'
+    init = share+'zsh/templates/Library/init/zsh'
 
     inreplace 'etc/zshenv', '#   ZDOT="/Library/init/zsh" ; export ZDOT',
       "ZDOT=\"#{link_tmpl}/Library/init/zsh\" ; export ZDOT"
@@ -21,34 +21,37 @@ class ZshTemplates <Formula
     inreplace 'Library/init/zsh/zshrc.d/003_homebrew_env.zsh',
       "HOMEBREW_PREFIX", HOMEBREW_PREFIX
 
-    (share+'zsh'+'templates').install ['Library', 'Applications', 'etc']
+    (share+'zsh/templates').install ['Library', 'Applications', 'etc']
     doc.install ['TODO.txt', 'READ_THIS_FIRST.txt', 'LICENSE.GPL']
 
     # put man pages where they belong
-    (init+'man').rename(man)
+    (init+'man').rename man
     # put html-man pages where they belong and fix names
     (man+'html').rename(doc+'html')
-    Dir[doc+'html'+'*.html'].each {|f| FileUtils.mv f, f.sub(/(\.html)/, '.7\1') }
+    Dir[doc+'html/*.html'].each {|f| FileUtils.mv f, f.sub(/(\.html)/, '.7\1') }
 
     # disable Fink and MacPorts setup scripts
     ['001_fink_env.zsh', '002_macports.zsh'].each do |f|
-      of = init+'zshrc.d'+f
-      nf = of.to_s+'.disabled'
-      of.rename(nf)
+      oldname = init+'zshrc.d'+f
+      newname = oldname.to_s+'.disabled'
+      oldname.rename newname
     end
 
+    # Create links for etc/zsh/{zshrc,zshenv}.
+    # Do not use the files in the keg here, such that the links become invalid
+    # when zsh-templates is unlinked and the files are no longer used.
     for f in ['zshenv', 'zshrc'] do
-      p = etc+'zsh'+f
-      o = link_tmpl+'etc'+f
-      if p.exist?
-        if not p.symlink? or not (p.readlink.realpath <=> o.realpath)
-          fbak = p.to_s() + Time.now.strftime('-homebrew-%Y-%m-%d-%H-%M-%S')
-          ohai "Backing up #{p} to #{fback}"
-          p.rename fbak
+      linkname = etc+'zsh'+f
+      tgtname = link_tmpl+'etc'+f
+      if linkname.exist?
+        if not linkname.symlink? or not (linkname.readlink.realpath <=> tgtname.realpath)
+          fbak = linkname.to_s() + Time.now.strftime('-homebrew-%Y-%m-%d-%H-%M-%S')
+          ohai "Backing up #{linkname} to #{fback}"
+          linkname.rename fbak
         end
       end
-      p.extend ObserverPathnameExtension
-      p.make_relative_symlink o
+      linkname.extend ObserverPathnameExtension
+      linkname.make_relative_symlink tgtname
     end
   end
 end
