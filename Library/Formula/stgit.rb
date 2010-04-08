@@ -11,8 +11,10 @@ class Stgit <Formula
   def install
     ENV['XML_CATALOG_FILES'] = etc+'xml'+'catalog'
     FileUtils.rm('setup.cfg')
+    # back up users ~/.pydistutils.cfg
     distcfg = Pathname.new('~/.pydistutils.cfg').expand_path()
-    distcfgbak = Pathname.new(distcfg.to_s() + Time.now.strftime('-homebrew-%Y-%m-%d-%H-%M-%S'))
+    distcfgbak = Pathname.new(distcfg.to_s() +
+                              Time.now.strftime('-homebrew-%Y-%m-%d-%H-%M-%S'))
     if distcfg.exist?
       ohai "Backing up #{distcfg} to #{distcfgbak}"
       distcfg.rename(distcfgbak)
@@ -21,6 +23,7 @@ class Stgit <Formula
       system "make", "prefix=#{prefix}", "all", "doc"
       system "make", "prefix=#{prefix}", "install", "install-doc"
     ensure
+      # always reinstate the users ~/.pydistutils.cfg, even on error
       if distcfgbak.exist?
         ohai "Recreating #{distcfg} from backup #{distcfgbak}"
         distcfgbak.rename(distcfg)
