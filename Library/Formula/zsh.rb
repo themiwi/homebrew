@@ -11,8 +11,8 @@ class Zsh <Formula
                           "--prefix=#{prefix}",
                           "--disable-dependency-tracking",
                           # don't version stuff in Homebrew, we already do that!
-                          "--enable-fndir=#{share+'zsh'+'functions'}",
-                          "--enable-scriptdir=#{share+'zsh'+'scripts'}",
+                          "--enable-fndir=#{share+'zsh/functions'}",
+                          "--enable-scriptdir=#{share+'zsh/scripts'}",
                           # specify sys-config directory
                           "--enable-etcdir=#{etc+'zsh'}",
                           # HTML doc directory
@@ -33,7 +33,7 @@ class Zsh <Formula
     (etc+'zsh').mkpath
     # prepare HOMEBREW_PREFIX/share/zsh directory to reduce number of symlinks
     # when combined with zsh-templates
-    (HOMEBREW_PREFIX+'share'+'zsh').mkpath
+    (HOMEBREW_PREFIX+'share/zsh').mkpath
   end
 
   def skip_clean? path
