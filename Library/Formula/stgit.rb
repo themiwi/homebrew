@@ -17,11 +17,14 @@ class Stgit <Formula
       ohai "Backing up #{distcfg} to #{distcfgbak}"
       distcfg.rename(distcfgbak)
     end
-    system "make", "prefix=#{prefix}", "all", "doc"
-    system "make", "prefix=#{prefix}", "install", "install-doc"
-    if distcfgbak.exist?
-      ohai "Recreating #{distcfg} from backup #{distcfgbak}"
-      distcfgbak.rename(distcfg)
+    begin
+      system "make", "prefix=#{prefix}", "all", "doc"
+      system "make", "prefix=#{prefix}", "install", "install-doc"
+    ensure
+      if distcfgbak.exist?
+        ohai "Recreating #{distcfg} from backup #{distcfgbak}"
+        distcfgbak.rename(distcfg)
+      end
     end
   end
 end
