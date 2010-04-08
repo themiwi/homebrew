@@ -9,9 +9,11 @@ class Xmlto <Formula
   depends_on 'docbook-xml'
 
   def install
-    ENV['XML_CATALOG_FILES'] = etc+'xml'+'catalog'
-    system "./configure", "--disable-debug", "--disable-dependency-tracking",
-      "--prefix=#{prefix}", "--mandir=#{prefix}/share/man"
+    ENV['XML_CATALOG_FILES'] = etc+'xml/catalog'
+    system "./configure", "--disable-debug",
+                          "--disable-dependency-tracking",
+                          "--prefix=#{prefix}",
+                          "--mandir=#{prefix}/share/man"
     system "make install"
   end
 end
