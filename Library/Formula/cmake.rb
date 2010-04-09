@@ -20,6 +20,8 @@ class Cmake <Formula
                            "--datadir=/share/cmake",
                            "--docdir=/share/doc/cmake",
                            "--mandir=/share/man"
+    # Parallel builds and directly calling "make install" interfere badly...
+    system "make"
     system "make install"
   end
 end
