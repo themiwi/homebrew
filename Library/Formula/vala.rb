@@ -11,7 +11,9 @@ class Vala <Formula
   depends_on 'glib'
 
   def install
-    system "./configure", "--prefix=#{prefix}", "--disable-dependency-tracking"
+    system "./configure", "--prefix=#{prefix}",
+                          "--disable-dependency-tracking",
+                          "--enable-vapigen"
     system "make" # Single step fails to compile for 0.8.0
     system "make install"
   end
