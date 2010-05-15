@@ -1,9 +1,10 @@
 require 'formula'
 
 class Pip <Formula
-  url 'http://pypi.python.org/packages/source/p/pip/pip-0.6.3.tar.gz'
+  url 'http://pypi.python.org/packages/source/p/pip/pip-0.7.tar.gz'
   homepage 'http://pip.openplans.org/'
-  md5 '0602fa9179cfaa98e41565d4a581d98c'
+  md5 '8d4b4f7266fe0808569182e6832d74ac'
+  version '0.7.0'
 
   depends_on 'setuptools'
 
@@ -54,19 +55,6 @@ if __name__ == '__main__':
 end
 
 __END__
-diff --git a/pip/baseparser.py b/pip/baseparser.py
-index 149c52d..82ffa46 100755
---- a/pip/baseparser.py
-+++ b/pip/baseparser.py
-@@ -186,7 +186,7 @@ parser.add_option(
-     '--local-log', '--log-file',
-     dest='log_file',
-     metavar='FILENAME',
--    default='./pip-log.txt',
-+    default=os.getenv('HOME')+'/Library/Logs/pip.log',
-     help=optparse.SUPPRESS_HELP)
- 
- parser.add_option(
 diff --git a/pip/locations.py b/pip/locations.py
 index bd70d92..e517292 100755
 --- a/pip/locations.py
@@ -96,3 +84,12 @@ index bd70d92..e517292 100755
  if sys.platform == 'win32':
      bin_py = os.path.join(sys.prefix, 'Scripts')
      # buildout uses 'bin' on Windows too?
+@@ -30,7 +30,7 @@ else:
+     bin_py = os.path.join(sys.prefix, 'bin')
+     default_storage_dir = os.path.join(user_dir, '.pip')
+     default_config_file = os.path.join(default_storage_dir, 'pip.conf')
+-    default_log_file = os.path.join(default_storage_dir, 'pip.log')
++    default_log_file = os.path.expanduser('~/Library/Logs/pip.log')
+     # Forcing to use /usr/local/bin for standard Mac OS X framework installs
+     if sys.platform[:6] == 'darwin' and sys.prefix[:16] == '/System/Library/':
+         bin_py = '/usr/local/bin'
