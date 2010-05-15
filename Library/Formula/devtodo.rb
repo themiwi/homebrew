@@ -14,12 +14,13 @@ class Devtodo <Formula
       "Regex.h", "Regex.hh"
     # Ensure that GNU Readline gets picked up
     readline = Formula.factory('readline')
+    ENV.append 'CPPFLAGS', "-I#{readline.include}"
+    ENV.append 'LDFLAGS', "-L#{readline.lib}"
+
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
-                          "--mandir=#{prefix}/share/man",
-                          "CPPFLAGS=-I#{readline.include}",
-                          "LDFLAGS=-L#{readline.lib}"
+                          "--mandir=#{prefix}/share/man"
     system "make install"
     # Install contrib
     system "install -d -m 755 #{prefix}/share/doc/devtodo/contrib"
