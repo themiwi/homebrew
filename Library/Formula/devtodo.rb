@@ -12,22 +12,20 @@ class Devtodo <Formula
   end
 
   def install
-    # Rename Regex.h to Regex.hh to avoid confusion with regex.h
+    # Rename Regex.h to Regex.hh to avoid case-sensitivity confusion with regex.h
     FileUtils.mv "util/Regex.h", "util/Regex.hh"
     inreplace ["util/Lexer.h", "util/Makefile.in", "util/Regex.cc"],
       "Regex.h", "Regex.hh"
-    # Ensure that GNU Readline gets picked up
-    readline = Formula.factory('readline')
 
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--prefix=#{prefix}",
                           "--mandir=#{man}"
     system "make install"
-    # Install contrib
     doc.install 'contrib'
   end
 end
+
 __END__
 Fix invalid regex. See http://swapoff.org/ticket/54
 
