@@ -1,19 +1,39 @@
 require 'formula'
 
 class Xmlto <Formula
-  url 'https://fedorahosted.org/releases/x/m/xmlto/xmlto-0.0.23.tar.bz2'
-  homepage 'http://cyberelk.net/tim/software/xmlto'
+  url 'http://fedorahosted.org/releases/x/m/xmlto/xmlto-0.0.23.tar.bz2'
   md5 '3001d6bb2bbc2c8f6c2301f05120f074'
+  homepage 'http://cyberelk.net/tim/software/xmlto/'
 
-  depends_on 'getopt'
-  depends_on 'docbook-xml'
+  depends_on 'docbook'
+  depends_on 'gnu-getopt'
 
   def install
-    ENV['XML_CATALOG_FILES'] = etc+'xml/catalog'
-    system "./configure", "--disable-debug",
-                          "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--mandir=#{prefix}/share/man"
+    docbook = Formula.factory "docbook"
+    getopt = Formula.factory "gnu-getopt"
+
+    unless File.exist? "/private/etc/xml/catalog"
+      opoo "You must to register docbook"
+      puts docbook.caveats
+      exit 99
+    end
+
+    # GNU getopt is keg-only, so point configure to it
+    ENV['GETOPT']=getopt.bin+"getopt"
+
+    ENV.j1
+    system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}"
+
     system "make install"
+  end
+
+  def caveats
+    docbook = Formula.factory "docbook"
+    <<-EOS.undent
+      xmlto requires that docbook be installed and registered.
+
+      See:
+        brew info docbook
+    EOS
   end
 end

@@ -2,20 +2,22 @@ require 'formula'
 
 class Nginx < Formula
   url 'http://nginx.org/download/nginx-0.7.67.tar.gz'
-  head 'http://nginx.org/download/nginx-0.8.42.tar.gz'
+  head 'http://nginx.org/download/nginx-0.8.44.tar.gz'
   homepage 'http://nginx.org/'
 
-  if ARGV.include? '--HEAD'
-    @md5='2818e8b03512b239f1238d702703bcf3'
+  unless (ARGV & ['--HEAD', '-H']).empty?
+    @md5='7158c67ba2697f7d469aa7b17bef202f'
   else
     @md5='b6e175f969d03a4d3c5643aaabc6a5ff'
   end
+
+  depends_on 'pcre'
 
   skip_clean 'logs'
 
   def patches
     # Changes default port to 8080
-    # Adds code to detect PCRE installed in a non-standard HOMEBREW_PREFIX
+    # Set configure to look in homebrew prefix for pcre
     DATA
   end
 
@@ -39,14 +41,10 @@ class Nginx < Formula
   end
 
   def install
-    configure_args = [
-      "--prefix=#{prefix}",
-      "--with-http_ssl_module"
-    ]
+    args = ["--prefix=#{prefix}", "--with-http_ssl_module", "--with-pcre"]
+    args << passenger_config_args if ARGV.include? '--with-passenger'
 
-    configure_args << passenger_config_args if ARGV.include? '--with-passenger'
-
-    system "./configure", *configure_args
+    system "./configure", *args
     system "make install"
   end
 
@@ -68,18 +66,18 @@ __END__
 @@ -155,6 +155,22 @@ else
              . auto/feature
          fi
-
+ 
 +        if [ $ngx_found = no ]; then
 +
 +            # Homebrew
-+           HOMEBREW_PREFIX=${NGX_PREFIX%Cellar*}
++            HOMEBREW_PREFIX=${NGX_PREFIX%Cellar*}
 +            ngx_feature="PCRE library in ${HOMEBREW_PREFIX}"
 +            ngx_feature_path="${HOMEBREW_PREFIX}/include"
 +
 +            if [ $NGX_RPATH = YES ]; then
-+                ngx_feature_libs="-R#{HOMEBREW_PREFIX}/lib -L#{HOMEBREW_PREFIX}/lib -lpcre"
++                ngx_feature_libs="-R${HOMEBREW_PREFIX}/lib -L${HOMEBREW_PREFIX}/lib -lpcre"
 +            else
-+                ngx_feature_libs="-L#{HOMEBREW_PREFIX}/lib -lpcre"
++                ngx_feature_libs="-L${HOMEBREW_PREFIX}/lib -lpcre"
 +            fi
 +
 +            . auto/feature
