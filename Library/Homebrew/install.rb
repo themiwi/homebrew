@@ -54,7 +54,7 @@ end
 def install f
   show_summary_heading = false
 
-  f.deps.each do |dep|
+  f.deps.uniq.each do |dep|
     dep = Formula.factory dep
     if dep.keg_only?
       ENV.prepend 'LDFLAGS', "-L#{dep.lib}"
@@ -152,8 +152,7 @@ def install f
     if (f.prefix+'man').exist?
       opoo 'A top-level "man" folder was found.'
       puts "Homebrew requires that man pages live under share."
-      puts 'This can often be fixed by passing "--mandir=#{man}" to configure,'
-      puts 'or by installing manually with "man1.install \'mymanpage.1\'".'
+      puts 'This can often be fixed by passing "--mandir=#{man}" to configure.'
     end
 
     # link from Cellar to Prefix
