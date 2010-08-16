@@ -23,6 +23,8 @@ class Git < Formula
     ENV['PERL_MM_OPT']='';
     # build verbosely so we can debug better
     ENV['V']='1'
+    # git was configured with deployment target 10.6
+    ENV['MACOSX_DEPLOYMENT_TARGET']='10.6'
 
     inreplace "Makefile" do |s|
       s.remove_make_var! %w{CFLAGS LDFLAGS}
