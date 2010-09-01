@@ -44,7 +44,7 @@ def build_framework?; ARGV.include? '--framework'; end
 
 # Are we installed or installing as a Framework?
 def as_framework?
-  (self.installed? and File.exists? prefix+"Frameworks/Python.framework") or build_framework?
+  (self.installed? and File.exists? prefix+"Library/Frameworks/Python.framework") or build_framework?
 end
 
 class Python <Formula
@@ -71,7 +71,7 @@ class Python <Formula
     # The Cellar location of site-packages
     if as_framework?
       # If we're installed or installing as a Framework, then use that location.
-      return prefix+"Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages"
+      return prefix+"Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages"
     else
       # Otherwise, use just the lib path.
       return lib+"python2.7/site-packages"
@@ -100,7 +100,7 @@ class Python <Formula
     end
 
     if build_framework?
-      args << "--enable-framework=#{prefix}/Frameworks"
+      args << "--enable-framework=#{prefix}/Library/Frameworks"
     else
       args << "--enable-shared" unless ARGV.include? '--static'
     end
@@ -118,12 +118,16 @@ class Python <Formula
   def caveats
     framework_caveats = <<-EOS.undent
       Framework Python was installed to:
-        #{prefix}/Frameworks/Python.framework
+        #{prefix}/Library/Frameworks/Python.framework
 
-      You may want to symlink this Framework to a standard OS X location,
-      such as:
-        mkdir ~/Frameworks
-        ln -s "#{prefix}/Frameworks/Python.framework" ~/Frameworks
+      The application bundles were installed to:
+        #{prefix}/Applications/Python 2.7
+
+      You may want to symlink the Framework folder and the application bundles
+      to a standard OS X location, such as:
+        mkdir -p ~/Frameworks ~/Applications
+        ln -s "#{prefix}/Library/Frameworks/Python.framework" ~/Frameworks
+        ln -s "#{prefix}/Applications/Python 2.7/"*.app ~/Applications
 
     EOS
 
@@ -152,3 +156,20 @@ class Python <Formula
     return s
   end
 end
+# This patch makes sure that .app's are installed in ${prefix}/Applications and
+# not /Applications.
+__END__
+diff --git a/configure b/configure
+index 8f53afe..941d718 100755
+--- a/configure
++++ b/configure
+@@ -2910,7 +2910,7 @@ if test "${enable_framework+set}" = set; then :
+ 			;;
+ 
+ 		*)
+-			FRAMEWORKINSTALLAPPSPREFIX="/Applications"
++			FRAMEWORKINSTALLAPPSPREFIX="${prefix}/Applications"
+ 			;;
+ 		esac
+ 
+
